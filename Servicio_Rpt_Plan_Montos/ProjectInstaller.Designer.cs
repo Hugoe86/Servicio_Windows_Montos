@@ -39,7 +39,8 @@
             // 
             // serviceInstaller1
             // 
-            this.serviceInstaller1.Description = "Se genera la informacion del reporte de planeacion montos";
+            this.serviceInstaller1.Description = "Se genera la informacion del reporte de planeacion montos en el horario de 06:00 " +
+    "pm - 07:00 pm";
             this.serviceInstaller1.DisplayName = "Servicio Plan Montos *******************";
             this.serviceInstaller1.ServiceName = "Srv_Plan_Montos";
             this.serviceInstaller1.StartType = System.ServiceProcess.ServiceStartMode.Automatic;

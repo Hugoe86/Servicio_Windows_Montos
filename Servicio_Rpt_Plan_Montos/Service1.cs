@@ -25,8 +25,7 @@ namespace Servicio_Rpt_Plan_Montos
         {
             InitializeComponent();
             Tiempo = new Timer();
-            Tiempo.Interval = 300000; // 30000 = 30 seg     // 600000 = 10 minutos
-            //1200000
+            Tiempo.Interval = 900000; // 900000 = 15 minutos     // 600000 = 10 minutos  //  1200000 = 20 minutos
             Tiempo.Elapsed += new ElapsedEventHandler(Tiempo_Contador);
         }
 
@@ -78,7 +77,7 @@ namespace Servicio_Rpt_Plan_Montos
 
             DateTime Dtime_Hora = DateTime.Now;
 
-            if (Dtime_Hora.Hour >= 19 && Dtime_Hora.Hour <= 21)
+            if (Dtime_Hora.Hour >= 18 && Dtime_Hora.Hour <= 19)
             {
                 Consultar_Informacion();
             }
