@@ -75,7 +75,7 @@ namespace Reportes_Planeacion.Montos.Datos
                 Str_My_Sql += ", g.Nombre_Giro";
                 Str_My_Sql += ", cc.Concepto_Id";
                 Str_My_Sql += ", cc.Nombre";
-                Str_My_Sql += ", sum(fd.Total) As Total_Facturado";
+                Str_My_Sql += ", sum(fd.importe) As Total_Facturado";
                 Str_My_Sql += ", MONTH(f.Fecha_Emision) as Bimestre";
                 Str_My_Sql += ", YEAR(f.Fecha_Emision) as Anio";
 
