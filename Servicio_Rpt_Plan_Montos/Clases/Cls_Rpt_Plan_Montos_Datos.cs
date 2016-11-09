@@ -7,6 +7,7 @@ using SIAC.Constantes;
 using SharpContent.ApplicationBlocks.Data;
 using Reportes_Planeacion.Montos.Negocio;
 using System.Data.SqlClient;
+using System.Globalization;
 
 namespace Reportes_Planeacion.Montos.Datos
 {
@@ -185,8 +186,7 @@ namespace Reportes_Planeacion.Montos.Datos
                 //  ****************************************************************************************************************************************
                 //  where **********************************************************************************************************************************
                 Str_My_Sql += " where";
-                Str_My_Sql += " fd.Estatus in ('PAGADO') ";
-                Str_My_Sql += " and year(rc.FECHA_CREO) = " + Datos.P_Anio;
+                Str_My_Sql += " year(rc.FECHA_CREO) = " + Datos.P_Anio;
                 Str_My_Sql += " and month(rc.FECHA_CREO) =" + Datos.P_Mes;
 
                 Str_My_Sql += " and(cc.Concepto_ID = (select p.CONCEPTO_AGUA from Cat_Cor_Parametros p) " +
@@ -381,8 +381,8 @@ namespace Reportes_Planeacion.Montos.Datos
                 Mi_SQL += "(";
                 Mi_SQL += "  '" + Datos.P_Giro_Id + "'";                                            //  1
                 Mi_SQL += ", '" + Datos.P_Dr_Registro["Concepto"].ToString() + "'";                 //  2
-                Mi_SQL += ",  " + Datos.P_Anio + "";                                                //  3
-                Mi_SQL += ",  " + Datos.P_Dr_Registro[Datos.P_Str_Nombre_Mes].ToString() + "";      //  4
+                Mi_SQL += ",  " + Convert.ToDouble(Datos.P_Anio).ToString(new CultureInfo("es-MX")) + "";   //  3
+                Mi_SQL += ",  " + Convert.ToDouble(Datos.P_Dr_Registro[Datos.P_Str_Nombre_Mes].ToString()).ToString(new CultureInfo("es-MX")) + "";      //  4
                 Mi_SQL += ",  getdate()";                                                           //  5
                 Mi_SQL += ", '" + Datos.P_Str_Usuario + "'";                                        //  6
                 Mi_SQL += ", '" + Datos.P_Int_Servicio + "'";                                       //  7
@@ -457,7 +457,7 @@ namespace Reportes_Planeacion.Montos.Datos
 
 
                 Mi_SQL = "update  Ope_Cor_Plan_Montos_Facturacion set ";
-                Mi_SQL += "  " + Datos.P_Str_Nombre_Mes + " = " + Datos.P_Dr_Registro[Datos.P_Str_Nombre_Mes].ToString(); 
+                Mi_SQL += "  " + Datos.P_Str_Nombre_Mes + " = " + Convert.ToDouble(Datos.P_Dr_Registro[Datos.P_Str_Nombre_Mes].ToString()).ToString(new CultureInfo("es-MX")) ; 
                 Mi_SQL += ", fecha_modifico = getdate()";
                 Mi_SQL += ", usuario_modifico = '" + Datos.P_Str_Usuario + "'";
                 Mi_SQL += " where id = '" + Datos.P_Id + "'";
@@ -544,8 +544,8 @@ namespace Reportes_Planeacion.Montos.Datos
                 Mi_SQL += "(";
                 Mi_SQL += "  '" + Datos.P_Giro_Id + "'";                                            //  1
                 Mi_SQL += ", '" + Datos.P_Dr_Registro["Concepto"].ToString() + "'";                 //  2
-                Mi_SQL += ",  " + Datos.P_Anio + "";                                                //  3
-                Mi_SQL += ",  " + Datos.P_Dr_Registro[Datos.P_Str_Nombre_Mes].ToString() + "";      //  4
+                Mi_SQL += ",  " + Convert.ToDouble(Datos.P_Anio).ToString(new CultureInfo("es-MX")) + "";   //  3
+                Mi_SQL += ",  " + Convert.ToDouble(Datos.P_Dr_Registro[Datos.P_Str_Nombre_Mes].ToString()).ToString(new CultureInfo("es-MX")) + "";      //  4
                 Mi_SQL += ",  getdate()";                                                           //  5
                 Mi_SQL += ", '" + Datos.P_Str_Usuario + "'";                                        //  6
                 Mi_SQL += ", '" + Datos.P_Int_Servicio + "'";                                       //  7
@@ -620,7 +620,7 @@ namespace Reportes_Planeacion.Montos.Datos
 
 
                 Mi_SQL = "update  Ope_Cor_Plan_Montos_Pagos set ";
-                Mi_SQL += "  " + Datos.P_Str_Nombre_Mes + " = " + Datos.P_Dr_Registro[Datos.P_Str_Nombre_Mes].ToString();
+                Mi_SQL += "  " + Datos.P_Str_Nombre_Mes + " = " + Convert.ToDouble(Datos.P_Dr_Registro[Datos.P_Str_Nombre_Mes].ToString()).ToString(new CultureInfo("es-MX"));
                 Mi_SQL += ", fecha_modifico = getdate()";
                 Mi_SQL += ", usuario_modifico = '" + Datos.P_Str_Usuario + "'";
                 Mi_SQL += " where id = '" + Datos.P_Id + "'";
