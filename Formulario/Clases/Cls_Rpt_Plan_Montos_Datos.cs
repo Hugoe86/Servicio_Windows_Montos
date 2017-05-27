@@ -90,7 +90,7 @@ namespace Reportes_Planeacion.Montos.Datos
                 Str_My_Sql += " JOIN Cat_Cor_Giros_Actividades ga ON ga.Actividad_Giro_ID = p.Giro_Actividad_ID";
                 Str_My_Sql += " JOIN Cat_Cor_Giros g ON g.GIRO_ID = ga.Giro_ID";
                 Str_My_Sql += " JOIN Cat_Cor_Tarifas t ON t.Tarifa_ID = p.Tarifa_ID";
-                Str_My_Sql += " JOIN CAT_COR_TIPOS_CUOTAS cu ON cu.CUOTA_ID = t.Cuota_ID";
+                //Str_My_Sql += " JOIN CAT_COR_TIPOS_CUOTAS cu ON cu.CUOTA_ID = t.Cuota_ID";
 
 
                 //  ****************************************************************************************************************************************
@@ -100,11 +100,12 @@ namespace Reportes_Planeacion.Montos.Datos
                 Str_My_Sql += " YEAR(f.Fecha_Emision) = " + Datos.P_Anio;
                 Str_My_Sql += " and MONTH(f.Fecha_Emision) = " + Datos.P_Mes;
 
-                Str_My_Sql += " AND (cu.CLAVE = 'CF' OR cu.CLAVE = 'SM' )";
+                //Str_My_Sql += " AND (cu.CLAVE = 'CF' OR cu.CLAVE = 'SM' )";
                 Str_My_Sql += " and(cc.Concepto_ID = (select p.CONCEPTO_AGUA from Cat_Cor_Parametros p) " +
                                         " OR  cc.Concepto_ID = (select p.Concepto_Agua_Comercial from Cat_Cor_Parametros p)" +
                                         " OR cc.Concepto_ID = (select p.CONCEPTO_DRENAJE from Cat_Cor_Parametros p) " +
                                         " OR cc.Concepto_ID = (select p.CONCEPTO_SANAMIENTO from Cat_Cor_Parametros p))";
+                Str_My_Sql += " 	and f.Estimado = 'NO' ";
 
                 //  ****************************************************************************************************************************************
                 //  ****************************************************************************************************************************************
@@ -136,7 +137,149 @@ namespace Reportes_Planeacion.Montos.Datos
 
         }// fin de consulta
 
+        //*******************************************************************************
+        //NOMBRE_FUNCION:  Consultar_Facturacion_Planeacion
+        //DESCRIPCION: Metodo que consulta los importes que se han facturado a lo largo de un año
+        //PARAMETROS : 1.- Cls_Rpt_Cor_Cc_Reportes_Varios_Neogcio Datos, objeto de la clase de negocios
+        //CREO       : Hugo Enrique Ramírez Aguilera
+        //FECHA_CREO : 11/Abril/2016
+        //MODIFICO   :
+        //FECHA_MODIFICO:
+        //CAUSA_MODIFICO:
+        //*******************************************************************************
+        public static DataTable Consultar_Facturacion_Planeacion_Estimado_Si(Cls_Rpt_Plan_Montos_Negocio Datos)
+        {
+            DataTable Dt_Consulta = new DataTable();
+            String Str_My_Sql = "";
+            try
+            {
+                //  ****************************************************************************************************************************************
+                //  ****************************************************************************************************************************************
+                //  ****************************************************************************************************************************************
+                Str_My_Sql = "select ";
+                Str_My_Sql += " g.GIRO_ID";
+                Str_My_Sql += ", F.No_Factura_Recibo";
+                Str_My_Sql += ", g.Nombre_Giro";
+                Str_My_Sql += ", MONTH(f.Fecha_Emision) as Bimestre";
+                Str_My_Sql += ", YEAR(f.Fecha_Emision) as Anio";
 
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                Str_My_Sql += ",(" +
+                                " SELECT sum(fdh.importe)" +
+                                " FROM Ope_Cor_Facturacion_Recibos_Detalles_Historicos fdh" +
+                                " WHERE Facturacion_Historico_ID IN (" +
+                                        " SELECT TOP 1 Facturacion_Historico_ID" +
+                                        " FROM Ope_Cor_Facturacion_Recibos_Historicos" +
+                                        " WHERE No_Factura_Recibo = f.No_Factura_Recibo" +
+                                        " ORDER BY Facturacion_Historico_ID ASC" +
+                                        " )" +
+                                    " AND (" +
+                                        " fdh.Concepto_ID = (" +
+                                            " SELECT p.CONCEPTO_AGUA" +
+                                            " FROM Cat_Cor_Parametros p" +
+                                            " )" +
+                                        " OR fdh.Concepto_ID = (" +
+                                            " SELECT p.Concepto_Agua_Comercial" +
+                                            " FROM Cat_Cor_Parametros p" +
+                                            " )" +
+                                        " )" +
+                                " ) AS Agua";
+
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+                Str_My_Sql += ",(" +
+                            " SELECT sum(fdh.importe)" +
+                            " FROM Ope_Cor_Facturacion_Recibos_Detalles_Historicos fdh" +
+                            " WHERE Facturacion_Historico_ID IN (" +
+                                    " SELECT TOP 1 Facturacion_Historico_ID" +
+                                    " FROM Ope_Cor_Facturacion_Recibos_Historicos" +
+                                    " WHERE No_Factura_Recibo = f.No_Factura_Recibo" +
+                                    " ORDER BY Facturacion_Historico_ID ASC" +
+                                    " )" +
+                                " AND (" +
+                                    " fdh.Concepto_ID = (" +
+                                        " SELECT p.CONCEPTO_DRENAJE" +
+                                        " FROM Cat_Cor_Parametros p" +
+                                        " )" +
+                                    " )" +
+                            " ) AS drenaje";
+
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                Str_My_Sql += ",(" +
+                          " SELECT sum(fdh.importe)" +
+                          " FROM Ope_Cor_Facturacion_Recibos_Detalles_Historicos fdh" +
+                          " WHERE Facturacion_Historico_ID IN (" +
+                                  " SELECT TOP 1 Facturacion_Historico_ID" +
+                                  " FROM Ope_Cor_Facturacion_Recibos_Historicos" +
+                                  " WHERE No_Factura_Recibo = f.No_Factura_Recibo" +
+                                  " ORDER BY Facturacion_Historico_ID ASC" +
+                                  " )" +
+                              " AND (" +
+                                  " fdh.Concepto_ID = (" +
+                                      " SELECT p.CONCEPTO_SANAMIENTO" +
+                                      " FROM Cat_Cor_Parametros p" +
+                                      " )" +
+                                  " )" +
+                          " ) AS saneamiento";
+
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+                //  ****************************************************************************************************************************************
+                //  ****************************************************************************************************************************************
+                //  from **********************************************************************************************************************************
+                Str_My_Sql += " from Ope_Cor_Facturacion_Recibos f";
+                Str_My_Sql += " join Ope_Cor_Facturacion_Recibos_Detalles fd on fd.No_Factura_Recibo = f.No_Factura_Recibo";
+                Str_My_Sql += " join Cat_Cor_Conceptos_Cobros cc on cc.Concepto_ID = fd.Concepto_ID";
+                Str_My_Sql += " JOIN Cat_Cor_Predios p on p.Predio_ID = f.Predio_ID";
+                Str_My_Sql += " JOIN Cat_Cor_Giros_Actividades ga ON ga.Actividad_Giro_ID = p.Giro_Actividad_ID";
+                Str_My_Sql += " JOIN Cat_Cor_Giros g ON g.GIRO_ID = ga.Giro_ID";
+                Str_My_Sql += " JOIN Cat_Cor_Tarifas t ON t.Tarifa_ID = p.Tarifa_ID";
+
+
+                //  ****************************************************************************************************************************************
+                //  ****************************************************************************************************************************************
+                //  where **********************************************************************************************************************************
+                Str_My_Sql += " where";
+                Str_My_Sql += " YEAR(f.Fecha_Emision) = " + Datos.P_Anio;
+                Str_My_Sql += " and MONTH(f.Fecha_Emision) = " + Datos.P_Mes;
+                Str_My_Sql += " AND f.Estimado = 'SI' ";
+
+                //  ****************************************************************************************************************************************
+                //  ****************************************************************************************************************************************
+                //  GROUP BY **********************************************************************************************************************************
+                Str_My_Sql += " GROUP BY";
+                Str_My_Sql += " g.GIRO_ID";
+                Str_My_Sql += ", F.No_Factura_Recibo";
+                Str_My_Sql += ", g.Nombre_Giro";
+                Str_My_Sql += ", f.Fecha_Emision";
+
+                //  ****************************************************************************************************************************************
+                //  ****************************************************************************************************************************************
+                //  ORDER BY **********************************************************************************************************************************
+                Str_My_Sql += " ORDER BY";
+                Str_My_Sql += " g.GIRO_ID";
+                Str_My_Sql += ", f.Fecha_Emision";
+
+
+                Dt_Consulta = SqlHelper.ExecuteDataset(Cls_Constantes.Str_Conexion, CommandType.Text, Str_My_Sql).Tables[0];
+
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception("Error: " + Ex.Message);
+            }
+
+            return Dt_Consulta;
+
+        }// fin de consulta
 
         //*******************************************************************************
         //NOMBRE_FUNCION:  Consultar_Pagos_A_Facturacion_Planeacion

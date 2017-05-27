@@ -100,7 +100,8 @@ namespace Servicio_Rpt_Plan_Montos
         {
             Cls_Cat_Cor_Parametros_Negocio Rs_Parametros = new Cls_Cat_Cor_Parametros_Negocio();
             Cls_Rpt_Plan_Montos_Negocio Rs_Consulta = new Cls_Rpt_Plan_Montos_Negocio();
-            DataTable Dt_Consulta_Facturacion = new DataTable();
+            DataTable Dt_Consulta_Facturacion_Estimado_No = new DataTable();
+            DataTable Dt_Consulta_Facturacion_Estimado_Si = new DataTable();
             DataTable Dt_Consulta_Pagos = new DataTable();
             DataTable Dt_Tarifas = new DataTable();
             DataTable Dt_Reporte = new DataTable();
@@ -119,7 +120,8 @@ namespace Servicio_Rpt_Plan_Montos
             String Str_Concepto_Agua_Comercial_Id = "";
             String Str_Concepto_Drenaje_Id = "";
             String Str_Concepto_Saneamiento_Id = "";
-            Decimal Dc_Total_Facturado = 0;
+            Decimal Dc_Total_Facturado_Estimado_No = 0;
+            Decimal Dc_Total_Facturado_Estimado_Si = 0;
             Decimal Dc_Total_Pagado = 0;
             DataTable Dt_Existencia = new DataTable();
 
@@ -146,7 +148,8 @@ namespace Servicio_Rpt_Plan_Montos
                 Dt_Reporte = Crear_Tabla_Reporte();
                 Dt_Reporte_Pagos = Crear_Tabla_Reporte();
 
-                Dt_Consulta_Facturacion = Rs_Consulta.Consultar_Facturacion_Planeacion();
+                Dt_Consulta_Facturacion_Estimado_No = Rs_Consulta.Consultar_Facturacion_Planeacion();
+                Dt_Consulta_Facturacion_Estimado_Si = Rs_Consulta.Consultar_Facturacion_Planeacion_Estimado_Si();
                 Dt_Consulta_Pagos = Rs_Consulta.Consultar_Pagos_A_Facturacion_Planeacion();
 
 
@@ -210,49 +213,82 @@ namespace Servicio_Rpt_Plan_Montos
 
                         Db_Total_Concepto = 0;
 
-
+                        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
                         if (Registro["Accion"].ToString() == "0")// Agua ó Agua_comercial
                         {
 
-                            foreach (DataColumn Columna in Dt_Consulta_Facturacion.Columns)
+                            foreach (DataColumn Columna in Dt_Consulta_Facturacion_Estimado_No.Columns)
                             {
                                 Type Tipo_Dato = Columna.DataType;
                             }
 
 
                             //  1   ********************************************************************************
-                            Dc_Total_Facturado = (from ord in Dt_Consulta_Facturacion.AsEnumerable()
+                            Dc_Total_Facturado_Estimado_No = (from ord in Dt_Consulta_Facturacion_Estimado_No.AsEnumerable()
                                                   where (ord.Field<String>("Concepto_id") == Str_Concepto_Agua_Id
                                                   || ord.Field<String>("Concepto_id") == Str_Concepto_Agua_Comercial_Id)
                                                   && ord.Field<String>("giro_id") == Registro["tarifa_id"].ToString()
                                                   && ord.Field<Int32>("bimestre") == Cont_For
                                                   select ord.Field<Decimal>("Total_Facturado"))
                                                     .Sum();
+
+                               //  1   ********************************************************************************
+                            Dc_Total_Facturado_Estimado_Si = (from ord in Dt_Consulta_Facturacion_Estimado_Si.AsEnumerable()
+                                                              where (ord.Field<String>("giro_id") == Registro["tarifa_id"].ToString()
+                                                              && ord.Field<Int32>("bimestre") == Cont_For)
+                                                              select ord.Field<Decimal>("Agua"))
+                                                    .Sum();
                         }
+                        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
                         else if (Registro["Accion"].ToString() == "1")// DRENAJE
                         {
                             //  2   ********************************************************************************
-                            Dc_Total_Facturado = (from ord in Dt_Consulta_Facturacion.AsEnumerable()
+                            Dc_Total_Facturado_Estimado_No = (from ord in Dt_Consulta_Facturacion_Estimado_No.AsEnumerable()
                                                   where ord.Field<String>("Concepto_id") == Str_Concepto_Drenaje_Id
                                                    && ord.Field<String>("giro_id") == Registro["tarifa_id"].ToString()
                                                   && ord.Field<Int32>("bimestre") == Cont_For
                                                   select ord.Field<Decimal>("Total_Facturado"))
                                                     .Sum();
+
+
+                            //  2   ********************************************************************************
+                            Dc_Total_Facturado_Estimado_Si = (from ord in Dt_Consulta_Facturacion_Estimado_Si.AsEnumerable()
+                                                              where (ord.Field<String>("giro_id") == Registro["tarifa_id"].ToString()
+                                                              && ord.Field<Int32>("bimestre") == Cont_For)
+                                                              select ord.Field<Decimal>("drenaje"))
+                                                    .Sum();
                         }
+                        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
                         else if (Registro["Accion"].ToString() == "2")// SANEAMIENTO
                         {
                             //  3   ********************************************************************************
-                            Dc_Total_Facturado = (from ord in Dt_Consulta_Facturacion.AsEnumerable()
+                            Dc_Total_Facturado_Estimado_No = (from ord in Dt_Consulta_Facturacion_Estimado_No.AsEnumerable()
                                                   where ord.Field<String>("Concepto_id") == Str_Concepto_Saneamiento_Id
                                                    && ord.Field<String>("giro_id") == Registro["tarifa_id"].ToString()
                                                   && ord.Field<Int32>("bimestre") == Cont_For
                                                   select ord.Field<Decimal>("Total_Facturado"))
                                                   .Sum();
+
+                            //  3   ********************************************************************************
+                            Dc_Total_Facturado_Estimado_Si = (from ord in Dt_Consulta_Facturacion_Estimado_Si.AsEnumerable()
+                                                              where (ord.Field<String>("giro_id") == Registro["tarifa_id"].ToString()
+                                                              && ord.Field<Int32>("bimestre") == Cont_For)
+                                                              select ord.Field<Decimal>("saneamiento"))
+                                                    .Sum();
                         }
+                        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                        //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
                         //  se agrega el concepto al mes correspondiente
-                        Registro[Str_Nombre_Mes] = Dc_Total_Facturado;
-                        Db_Total = Db_Total + Convert.ToDouble(Dc_Total_Facturado);
+                        Registro[Str_Nombre_Mes] = Dc_Total_Facturado_Estimado_No + Dc_Total_Facturado_Estimado_Si;
+                        Db_Total = Db_Total + Convert.ToDouble(Dc_Total_Facturado_Estimado_No) + Convert.ToDouble(Dc_Total_Facturado_Estimado_Si);
                     }
 
                     Registro["Total"] = Db_Total;
@@ -347,7 +383,7 @@ namespace Servicio_Rpt_Plan_Montos
                         else if (Registro["Accion"].ToString() == "1")// DRENAJE
                         {
                             //  2   ********************************************************************************
-                            Dc_Total_Facturado = (from ord in Dt_Consulta_Pagos.AsEnumerable()
+                            Dc_Total_Facturado_Estimado_No = (from ord in Dt_Consulta_Pagos.AsEnumerable()
                                                   where ord.Field<String>("Concepto_id") == Str_Concepto_Drenaje_Id
                                                    && ord.Field<String>("giro_id") == Registro["tarifa_id"].ToString()
                                                   && ord.Field<Int32>("Mes") == Cont_For
@@ -357,7 +393,7 @@ namespace Servicio_Rpt_Plan_Montos
                         else if (Registro["Accion"].ToString() == "2")// SANEAMIENTO
                         {
                             //  3   ********************************************************************************
-                            Dc_Total_Facturado = (from ord in Dt_Consulta_Pagos.AsEnumerable()
+                            Dc_Total_Facturado_Estimado_No = (from ord in Dt_Consulta_Pagos.AsEnumerable()
                                                   where ord.Field<String>("Concepto_id") == Str_Concepto_Saneamiento_Id
                                                    && ord.Field<String>("giro_id") == Registro["tarifa_id"].ToString()
                                                   && ord.Field<Int32>("Mes") == Cont_For

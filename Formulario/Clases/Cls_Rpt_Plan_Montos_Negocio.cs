@@ -32,6 +32,7 @@ namespace Reportes_Planeacion.Montos.Negocio
         public DataTable Consultar_Tarifas_Giro() { return Cls_Rpt_Plan_Montos_Datos.Consultar_Tarifas_Giro(this); }
 
         public DataTable Consultar_Facturacion_Planeacion() { return Cls_Rpt_Plan_Montos_Datos.Consultar_Facturacion_Planeacion(this); }
+        public DataTable Consultar_Facturacion_Planeacion_Estimado_Si() { return Cls_Rpt_Plan_Montos_Datos.Consultar_Facturacion_Planeacion_Estimado_Si(this); }
         public DataTable Consultar_Pagos_A_Facturacion_Planeacion() { return Cls_Rpt_Plan_Montos_Datos.Consultar_Pagos_A_Facturacion_Planeacion(this); }
 
         public DataTable Consultar_Si_Existe_Registro_Facturacion() { return Cls_Rpt_Plan_Montos_Datos.Consultar_Si_Existe_Registro_Facturacion(this); }
