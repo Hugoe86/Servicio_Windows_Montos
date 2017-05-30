@@ -33,7 +33,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(23, 21);
+            this.button1.Location = new System.Drawing.Point(13, 12);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(113, 46);
             this.button1.TabIndex = 0;
@@ -45,10 +45,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(207, 89);
+            this.ClientSize = new System.Drawing.Size(333, 107);
             this.Controls.Add(this.button1);
             this.Name = "Form1";
-            this.Text = "Prueba";
+            this.Text = "Prueba funcion montos";
             this.ResumeLayout(false);
 
         }

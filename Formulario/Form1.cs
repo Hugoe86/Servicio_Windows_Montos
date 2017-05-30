@@ -9,11 +9,14 @@ using System.Windows.Forms;
 using Reportes_Planeacion.Montos.Negocio;
 using SIAC.Parametros.Negocios;
 using SIAC.Metodos_Generales;
+using System.Threading;
 
 namespace Frm_Reporte_Montos
 {
     public partial class Form1 : Form
     {
+
+
         public Form1()
         {
             InitializeComponent();
@@ -78,6 +81,8 @@ namespace Frm_Reporte_Montos
 
             try
             {
+                
+
                 //  se consultan los parametros
                 Dt_Parametros = Rs_Parametros.Consulta_Parametros();
 
@@ -136,7 +141,7 @@ namespace Frm_Reporte_Montos
                     Dt_Reporte.Rows.Add(Dr_Nuevo_Elemento);
                 }
 
-
+                int cont_x = 0;
                 //********************************************************************************************************************
                 //********************************************************************************************************************
                 //********************************************************************************************************************
@@ -171,10 +176,10 @@ namespace Frm_Reporte_Montos
                         if (Registro["Accion"].ToString() == "0")// Agua ó Agua_comercial
                         {
 
-                            foreach (DataColumn Columna in Dt_Consulta_Facturacion_Estimado_Si.Columns)
-                            {
-                                Type Tipo_Dato = Columna.DataType;
-                            }
+                            //foreach (DataColumn Columna in Dt_Consulta_Facturacion_Estimado_Si.Columns)
+                            //{
+                            //    Type Tipo_Dato = Columna.DataType;
+                            //}
 
 
                             //  1   ********************************************************************************
@@ -185,6 +190,13 @@ namespace Frm_Reporte_Montos
                                                   && ord.Field<Int32>("bimestre") == Cont_For
                                                   select ord.Field<Decimal>("Total_Facturado"))
                                                     .Sum();
+
+                            cont_x++;
+
+                            //if (cont_x == 28)
+                            //{
+                            //    String X = "";
+                            //}
 
                             //  1   ********************************************************************************
                             Dc_Total_Facturado_Estimado_Si = (from ord in Dt_Consulta_Facturacion_Estimado_Si.AsEnumerable()
@@ -298,6 +310,13 @@ namespace Frm_Reporte_Montos
                     for (int Cont_For = 1; Cont_For <= 12; Cont_For++)
                     {
 
+                        //if (Cont_For == 5)
+                        //{
+                        //    string x = "";
+
+                        //}
+
+
                         Dt_Auxiliar = Dt_Consulta_Pagos.Copy();
                         Dt_Auxiliar.DefaultView.RowFilter = "giro_id = '" + Registro["tarifa_id"].ToString() + "' and mes = '" + Cont_For.ToString() + "'";
                         Dt_Auxiliar = Dt_Auxiliar.DefaultView.ToTable();
@@ -316,10 +335,10 @@ namespace Frm_Reporte_Montos
                         if (Registro["Accion"].ToString() == "0")// Agua ó Agua_comercial
                         {
 
-                            foreach (DataColumn Columna in Dt_Consulta_Pagos.Columns)
-                            {
-                                Type Tipo_Dato = Columna.DataType;
-                            }
+                            //foreach (DataColumn Columna in Dt_Consulta_Pagos.Columns)
+                            //{
+                            //    Type Tipo_Dato = Columna.DataType;
+                            //}
 
 
                             //  1   ********************************************************************************
@@ -334,7 +353,7 @@ namespace Frm_Reporte_Montos
                         else if (Registro["Accion"].ToString() == "1")// DRENAJE
                         {
                             //  2   ********************************************************************************
-                            Dc_Total_Facturado_Estimado_No = (from ord in Dt_Consulta_Pagos.AsEnumerable()
+                            Dc_Total_Pagado = (from ord in Dt_Consulta_Pagos.AsEnumerable()
                                                   where ord.Field<String>("Concepto_id") == Str_Concepto_Drenaje_Id
                                                    && ord.Field<String>("giro_id") == Registro["tarifa_id"].ToString()
                                                   && ord.Field<Int32>("Mes") == Cont_For
@@ -344,7 +363,7 @@ namespace Frm_Reporte_Montos
                         else if (Registro["Accion"].ToString() == "2")// SANEAMIENTO
                         {
                             //  3   ********************************************************************************
-                            Dc_Total_Facturado_Estimado_No = (from ord in Dt_Consulta_Pagos.AsEnumerable()
+                            Dc_Total_Pagado = (from ord in Dt_Consulta_Pagos.AsEnumerable()
                                                   where ord.Field<String>("Concepto_id") == Str_Concepto_Saneamiento_Id
                                                    && ord.Field<String>("giro_id") == Registro["tarifa_id"].ToString()
                                                   && ord.Field<Int32>("Mes") == Cont_For
@@ -433,6 +452,7 @@ namespace Frm_Reporte_Montos
 
                 }// fin foreach
 
+                
 
                 MessageBox.Show("Proceso exitoso", "Aviso");
 
@@ -440,6 +460,8 @@ namespace Frm_Reporte_Montos
             catch (Exception Ex)
             {
                 //Mostrar_Informacion(1, "Error: (Consultar_Notificaciones)" + Ex.ToString());
+                MessageBox.Show("Error: (Consultar_Notificaciones)" + Ex.ToString(), "Aviso");
+
             }
         }
 
@@ -486,7 +508,6 @@ namespace Frm_Reporte_Montos
 
             return Dt_Reporte;
         }
-    
 
     }
 }

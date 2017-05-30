@@ -297,17 +297,29 @@ namespace Reportes_Planeacion.Montos.Datos
             String Str_My_Sql = "";
             try
             {
+
+                Str_My_Sql = "SELECT " +
+                                " GIRO_ID" +
+                                " ,Nombre_Giro" +
+                                " ,Concepto_Id" +
+                                " ,Nombre" +
+                                " ,cast(sum(Pagado) as decimal) as Pagado" +
+                                " ,cast(Mes as int) as Mes" +
+                                " ,Año";
+
+                Str_My_Sql += " from (";
+
                 //  ****************************************************************************************************************************************
                 //  ****************************************************************************************************************************************
                 //  ****************************************************************************************************************************************
-                Str_My_Sql = "select ";
+                Str_My_Sql += "select ";
                 Str_My_Sql += " g.GIRO_ID";
                 Str_My_Sql += ", g.Nombre_Giro";
                 Str_My_Sql += ", fd.Concepto_Id";
                 Str_My_Sql += ", cc.Nombre";
                 Str_My_Sql += ", sum(mc.importe) as Pagado";
-                Str_My_Sql += ", month(f.Fecha_Emision) as Mes";
-                Str_My_Sql += ", year(f.Fecha_Emision) as Año";
+                Str_My_Sql += ", month(rc.FECHA_CREO) as Mes";
+                Str_My_Sql += ", year(rc.FECHA_CREO) as Año";
 
 
                 //  ****************************************************************************************************************************************
@@ -338,8 +350,8 @@ namespace Reportes_Planeacion.Montos.Datos
                                       " OR cc.Concepto_ID = (select p.CONCEPTO_SANAMIENTO from Cat_Cor_Parametros p))";
 
 
-                Str_My_Sql += "and year(f.Fecha_Emision) = year(rc.FECHA_CREO) " +
-                                   " and MONTH(f.Fecha_Emision) = MONTH(rc.FECHA_CREO)";
+                //Str_My_Sql += "and year(f.Fecha_Emision) = year(rc.FECHA_CREO) " +
+                //                   " and MONTH(f.Fecha_Emision) = MONTH(rc.FECHA_CREO)";
                 //  ****************************************************************************************************************************************
                 //  ****************************************************************************************************************************************
                 //  GROUP BY **********************************************************************************************************************************
@@ -351,13 +363,27 @@ namespace Reportes_Planeacion.Montos.Datos
                 Str_My_Sql += ", rc.FECHA_CREO";
                 Str_My_Sql += ", f.Fecha_Emision";
 
+                ////  ****************************************************************************************************************************************
+                ////  ****************************************************************************************************************************************
+                ////  ORDER BY **********************************************************************************************************************************
+                //Str_My_Sql += " ORDER BY";
+                //Str_My_Sql += " g.GIRO_ID";
+                //Str_My_Sql += ", rc.FECHA_CREO";
+                //Str_My_Sql += ", fd.Concepto_ID";
+
                 //  ****************************************************************************************************************************************
                 //  ****************************************************************************************************************************************
-                //  ORDER BY **********************************************************************************************************************************
-                Str_My_Sql += " ORDER BY";
-                Str_My_Sql += " g.GIRO_ID";
-                Str_My_Sql += ", rc.FECHA_CREO";
-                Str_My_Sql += ", fd.Concepto_ID";
+                //  ****************************************************************************************************************************************
+
+                Str_My_Sql += ") as x  ";
+
+                Str_My_Sql += " GROUP BY  " +
+                                    " GIRO_ID" +
+                                    " ,Nombre_Giro" +
+                                    " ,Concepto_Id" +
+                                    " ,Nombre" +
+                                    " ,Mes" +
+                                    " ,Año";
 
 
                 Dt_Consulta = SqlHelper.ExecuteDataset(Cls_Constantes.Str_Conexion, CommandType.Text, Str_My_Sql).Tables[0];
